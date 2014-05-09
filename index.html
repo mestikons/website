@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>dudapre by mestikons</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">dudapre</h1>
+        <p class="header">duda prewiev</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/mestikons/website/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/mestikons/website/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/mestikons/website">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/mestikons">mestikons</a></p>
+
+
+      </header>
+      <section>
+        <h1>
+<a name="website-generator-for-phpmyadmin" class="anchor" href="#website-generator-for-phpmyadmin"><span class="octicon octicon-link"></span></a>Website generator for phpMyAdmin</h1>
+
+<p>Python code to generate phpMyAdmin's website using Genshi templates.</p>
+
+<h2>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<p>Python - <a href="http://www.python.org/">http://www.python.org/</a>
+    (2.7 tested, other should work also)
+Genshi -  <a href="http://genshi.edgewall.org/">http://genshi.edgewall.org/</a>
+    (0.6.0 tested)
+python-feedparser - <a href="http://code.google.com/p/feedparser/">http://code.google.com/p/feedparser/</a>
+    (5.1 tested)
+python-dateutil - <a href="http://labix.org/python-dateutil">http://labix.org/python-dateutil</a>
+    (1.5 tested)</p>
+
+<h2>
+<a name="security-announcements" class="anchor" href="#security-announcements"><span class="octicon octicon-link"></span></a>Security announcements</h2>
+
+<p>To create a new security announcement, copy templates/security/<em>PMASA</em> to
+templates/security/PMASA-YYYY-N and edit its contents.</p>
+
+<h2>
+<a name="page-generating" class="anchor" href="#page-generating"><span class="octicon octicon-link"></span></a>Page generating</h2>
+
+<p>Each page has its own template. For most things it means inclusion of
+other templates to generate full page. These partial includes should be
+named with underscore as first character (eg. _page.tpl).</p>
+
+<p>To add a new page, simply put a file named something.tpl to the templates 
+directory and it will be automatically used as a template on next run.</p>
+
+<p>All pages should at the end include <em>page.tpl to get layout and other
+common things. You can see example page at templates/_sample</em>.tpl</p>
+
+<p>Static data required for generating pages is stored in data/ folder.</p>
+
+<h2>
+<a name="menu" class="anchor" href="#menu"><span class="octicon octicon-link"></span></a>Menu</h2>
+
+<p>Menu is configured in data/menu.py, the first element always means page name
+(extension is added automatically) second menu item title.</p>
+
+<h2>
+<a name="themes" class="anchor" href="#themes"><span class="octicon octicon-link"></span></a>Themes</h2>
+
+<p>Themes require additional metadata, which is stored in data/themes.py.</p>
+
+<h2>
+<a name="awards" class="anchor" href="#awards"><span class="octicon octicon-link"></span></a>Awards</h2>
+
+<p>All awards are listed in data/awards.py.</p>
+
+<h2>
+<a name="screenshots" class="anchor" href="#screenshots"><span class="octicon octicon-link"></span></a>Screenshots</h2>
+
+<p>All screenshots are listed in data/screenshots.py.</p>
+
+<h2>
+<a name="markup-rules" class="anchor" href="#markup-rules"><span class="octicon octicon-link"></span></a>Markup rules</h2>
+
+<p>(See genshi docs for more details).</p>
+
+<ul>
+<li>$ is special char to indicate template variable, to escape it, use $$</li>
+<li>comments which first char is ! (eg. &lt;!--! comment --&gt;) will not be in output</li>
+</ul><h2>
+<a name="special-pages" class="anchor" href="#special-pages"><span class="octicon octicon-link"></span></a>Special pages</h2>
+
+<p>Directory static contains some special pages, which have to be present
+on the website. First there is version.php script, which shows most
+current phpMyAdmin version, which is then offered as an update. The rest
+are currently just compatibility files with old website - security.php,
+which redirects security issues to new pages and _redirect.tpl which is
+used for generating redirects based on data/redirects.py.</p>
+
+<h2>
+<a name="generating-website" class="anchor" href="#generating-website"><span class="octicon octicon-link"></span></a>Generating website</h2>
+
+<p>The website itself is rendered using render.py, here are options which
+are currently used for <a href="http://www.phpmyadmin.net/home_page/">http://www.phpmyadmin.net/home_page/</a>::</p>
+
+<pre><code>./render.py \
+    --quiet \
+    --server http://www.phpmyadmin.net \
+    --base-url /home_page/ \
+    --quiet-cache \
+    --log render.log \
+    --extension php
+</code></pre>
+
+<p>If you want to make log visible on website, copy it to output folder::</p>
+
+<pre><code>cp render.log output/
+</code></pre>
+
+<p>And finally rsync it to sourceforge::</p>
+
+<pre><code>rsync -az --delete output/ user,phpmyadmin@web.sourceforge.net:htdocs/home_page/
+</code></pre>
+
+<h2>
+<a name="automatic-build" class="anchor" href="#automatic-build"><span class="octicon octicon-link"></span></a>Automatic build</h2>
+
+<p>There is configured automatic build of website, which runs every hour.
+In case website is not updated, you might want to check the build log
+for any possible failures:</p>
+
+<p><a href="http://www.phpmyadmin.net/home_page/render.log">http://www.phpmyadmin.net/home_page/render.log</a></p>
+
+<h2>
+<a name="twitter-integration" class="anchor" href="#twitter-integration"><span class="octicon octicon-link"></span></a>Twitter integration</h2>
+
+<p>The script can post new security issues and news to Twitter. You need to have
+tweepy module for that and configure Twitter credentials in <code>~/.pmaweb</code>::</p>
+
+<pre><code>[twitter]
+consumer_key = &lt;consumer key&gt;
+consumer_secret = &lt;consumer secret&gt;
+token_key = &lt;access token key&gt;
+token_secret = &lt;access token secret&gt;
+</code></pre>
+
+<p>Information about obtaining these OAuth tokens is available at 
+<a href="http://pythonhosted.org/tweepy/html/auth_tutorial.html">http://pythonhosted.org/tweepy/html/auth_tutorial.html</a>.</p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>The website generator is licensed under GNU GPL version 2 or later.</p>
+
+<p>Website itself uses mootools <a href="http://mootools.net/">http://mootools.net/</a>, slimbox
+<a href="http://www.digitalia.be/software/slimbox">http://www.digitalia.be/software/slimbox</a>, fader and sorting_table
+<a href="http://madhatted.com/2008/6/20/the-joy-of-tables-on-cows">http://madhatted.com/2008/6/20/the-joy-of-tables-on-cows</a> which are
+licensed under terms of MIT license.</p>
+
+<p>The website content is licensed under Creative Commons
+Attribution-Noncommercial-Share Alike 3.0 Unported License.</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
